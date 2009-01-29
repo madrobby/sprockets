@@ -4,6 +4,7 @@ require File.join(File.dirname(__FILE__), *%w".. lib sprockets")
 require "optparse"
 
 load_path = (ENV["SPROCKETS_PATH"] || "").split(":")
+pack_output = false
 filenames = []
 
 OptionParser.new do |opts|
@@ -21,6 +22,10 @@ OptionParser.new do |opts|
   
   opts.on("-I DIRECTORY", "--include-dir=DIRECTORY", "Adds the directory to the Sprockets load path") do |directory|
     load_path << directory
+  end
+  
+  opts.on("-p", "--packed", "Pack output file with YUI compressor") do
+    pack_output = true
   end
   
   opts.on_tail("-h", "--help", "Shows this help message") do
@@ -55,4 +60,5 @@ filenames.each do |filename|
   end
 end
 
-print preprocessor.output_file
+output = preprocessor.output_file
+print pack_output ? Sprockets::Packer.new(output).output_file : output
